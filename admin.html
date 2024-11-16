@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome, {{ session['adminuser'] }}!</h1>
+    <div id="forms">
+        <form title="create" action="/admincreate" method="post">
+            <label for="productname">Product name: </label>
+            <input type="text" id="productname" name="productname" required /><br />
+            <label for="userid">User id: </label>
+            <input type="number" id="userid" name="usesrid" min="0" required /><br />
+            <label for="price">Price: </label>
+            <input type="text" id="price" name="price" required /><br />
+            <label for="quantity">Quantity: </label>
+            <input type="number" id="quantity" name="quantity" min="0" required /><br />
+            <label for="description">Description:</label><br />
+            <input type="text" id="description" name="description" height="5" width="50" /><br />
+            <input type="submit" id="create" name="create" value="Create" />
+        </form>
+        <form title="update" action="/adminupdate" method="post">
+            <label for="itemid">Item ID: </label>
+            <input type="number" id="itemid" name="itemid" required />
+            <label for="productname">Product name: </label>
+            <input type="text" id="productname" name="productname" /><br />
+            <label for="userid">User id: </label>
+            <input type="number" id="userid" name="usesrid" min="0" /><br />
+            <label for="price">Price: </label>
+            <input type="text" id="price" name="price" /><br />
+            <label for="quantity">Quantity: </label>
+            <input type="number" id="quantity" name="quantity" min="0" /><br />
+            <label for="description">Description:</label><br />
+            <input type="text" id="description" name="description" height="5" width="50" /><br />
+            <input type="submit" id="update" name="update" value="Update" />
+        </form>
+        <form title="read" action="/adminread" method="get">
+            <label for="itemid">Item ID: </label>
+            <input type="number" id="itemid" name="itemid" required />
+            <input type="submit" id="read" name="read" value="Read" />
+        </form>
+        <form title="readall" action="/adminreadall" method="get">
+            <input type="submit" id="readall" name="readall" value="Read all" />
+        </form>
+        <form title="delete" action="/admindelete" method="post">
+            <label for="itemid">Item ID: </label>
+            <input type="number" id="itemid" name="itemid" required />
+            <input type="submit" id="delete" name="delete" value="Delete" />
+        </form>
+    </div>
+
+    <a href="/logout">Logout</a>  <!-- This link triggers the logout -->
+</body>
+</html>

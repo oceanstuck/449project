@@ -12,7 +12,7 @@ app.secret_key = 'hewwo? hewwo!'
 
 # MySQL database connection configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:hewwo@localhost/data'  # Define the database URI for MySQL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable tracking modifications for performance reasons
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Disable tracking modifications for perjsonance reasons
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=60)
 session.permanent = True
 
@@ -23,13 +23,13 @@ db = SQLAlchemy(app)
 class user(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(250), nullable=False)
+    pword = db.Column(db.String(250), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
 
-    def __init__(self, username, password, address, email):
+    def __init__(self, username, pword, address, email):
         self.username = username
-        self.password = password
+        self.pword = pword
         self.address = address
         self.email = email
 
@@ -37,27 +37,27 @@ class user(db.Model):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password,
+            "password": self.pword,
             "address": self.address,
             "email": self.email
         }
 
 class admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db .Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
-    password = db.Column(db.String(250), nullable=False)
+    pword = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, pword, email):
         self.username = username
-        self.password = password
+        self.pword = pword
         self.email = email
 
     def serialize(self):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password,
+            "password": self.pword,
             "email": self.email
         }
 
@@ -65,7 +65,7 @@ class inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     productName = db.Column(db.String(50), nullable=False, unique=True)
     userID = db.Column(db.Integer, ForeignKey(user.id), nullable=False)
-    description = db.Column(db.String(500), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
     price = db.Column(db.Decimal(5,2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=0)
 
@@ -86,11 +86,8 @@ class inventory(db.Model):
             "quantity": self.quantity
         }
 
-#table creation
-
-
 # Create the database and table when the app starts
-with app.app_context():  # Use the app context to perform actions within the Flask application
+with app.app_context():  # Use the app context to perjson actions within the Flask application
     db.create_all()  # Create all tables defined by the models
 
 #frontend stuff
@@ -108,11 +105,11 @@ def index():
 @app.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
-        loginInfo = request.form
+        loginInfo = request.json
         userData = user.query.first(user.username == loginInfo['username'])
 
         if(userData is not None):
-            if(loginInfo['pword'] == userData['password']):
+            if(loginInfo['pword'] == userData['pword']):
                 session['username'] = loginInfo['username']
                 session['userID'] = userData['id']
                 return redirect(url_for('main')), 200
@@ -126,11 +123,11 @@ def login():
 @app.route('/adminlogin', methods=['POST'])
 def adminlogin():
     if request.method == 'POST':
-        loginInfo = request.form
+        loginInfo = request.json
         adminData = admin.query.first(admin.username == loginInfo['username'])
 
         if(adminData is not None):
-            if(loginInfo['pword'] == adminData['password']):
+            if(loginInfo['pword'] == adminData['pword']):
                 session['adminuser'] = loginInfo['username']
                 return redirect(url_for('admin')), 200
             else:
@@ -143,13 +140,13 @@ def adminlogin():
 @app.route('/register', methods=["POST"])
 def register():
     if request.method == 'POST':
-        accountInfo = request.form
+        accountInfo = request.json
     
         if(accountInfo is None):
-            return jsonify({'error': 'Missing form'}), 400
+            return jsonify({'error': 'Missing json'}), 400
         if(accountInfo['username'] is None):
             return jsonify({'error': 'Missing username'}), 400
-        if(accountInfo['password'] is None):
+        if(accountInfo['pword'] is None):
             return jsonify({'error': 'Missing password'}), 400
         if(accountInfo['address'] is None):
             return jsonify({'error': 'Missing address'}), 400
@@ -158,7 +155,7 @@ def register():
         if not validate_email(accountInfo['email']):
             return jsonify({'error': 'Invalid email'}), 400
 
-        newUser = user(accountInfo['username'], accountInfo['password'], accountInfo['address'], accountInfo['email']) # password should *NEVER* be stored in plaintext in a real production environment but im just trying to get it done :skull:
+        newUser = user(accountInfo['username'], accountInfo['pword'], accountInfo['address'], accountInfo['email']) # password should *NEVER* be stored in plaintext in a real production environment but im just trying to get it done :skull:
         db.session.add(newUser)
         db.session.commit()
         return jsonify(newUser.serialize()), 201
@@ -196,7 +193,7 @@ def ValidatePrice(priceStr):
 
 @app.route('/create', methods=['POST'])
 def create():
-    productInfo = request.form
+    productInfo = request.json
     if ValidatePrice(productInfo['price']) is False:
         return jsonify({'error': 'could not convert string to float'}), 400
 
@@ -212,7 +209,7 @@ def create():
 
 @app.route('/admincreate', methods=['POST'])
 def create():
-    productInfo = request.form
+    productInfo = request.json
     if ValidatePrice(productInfo['price']) is False:
         return jsonify({'error': 'could not convert string to float'}), 400
 
@@ -228,7 +225,7 @@ def create():
 
 @app.route('/read', methods=['GET'])
 def read():
-    productID = request.form['itemid']
+    productID = request.json['itemid']
     product = inventory.query.get(productID)
     if product is None:
         return jsonify({'error': 'no such product exists'}), 404
@@ -238,7 +235,7 @@ def read():
 
 @app.route('/adminread', methods=['GET'])
 def adminread():
-    productID = request.form['itemid']
+    productID = request.json['itemid']
     product = inventory.query.get(productID)
     if product is None:
         return jsonify({'error': 'no such product exists'}), 404
@@ -254,9 +251,9 @@ def adminreadall():
     products = inventory.query.all()
     return jsonify([user.serialize() for product in products])
 
-@app.route('/update', methods=['POST'])
+@app.route('/update', methods=['PUT'])
 def update():
-    productInfo = request.form
+    productInfo = request.json
     product = inventory.query.get(productInfo['id'])
     if product is None:
         return jsonify({'error': 'no product with this id'}), 404
@@ -276,9 +273,9 @@ def update():
     db.session.commit()
     return jsonify(productInfo.serialize()), 201
 
-@app.route('/adminupdate', methods=['POST'])
+@app.route('/adminupdate', methods=['PUT'])
 def adminupdate():
-    productInfo = request.form
+    productInfo = request.json
     product = inventory.query.get(productInfo['id'])
     if product is None:
         return jsonify({'error': 'no product with this id'}), 404
@@ -298,9 +295,9 @@ def adminupdate():
     db.session.commit()
     return jsonify(productInfo.serialize()), 201
 
-@app.route('/delete', methods=['POST'])
+@app.route('/delete', methods=['DELETE'])
 def delete():
-    productID = request.form['itemid']
+    productID = request.json['itemid']
     product = inventory.query.get(productID)
     if product is None:
         return jsonify({'error': 'no such product exists'}), 404
@@ -311,9 +308,9 @@ def delete():
     db.session.commit()
     return jsonify({'info': 'successfully deleted'}), 200
 
-@app.route('/admindelete', methods=['POST'])
+@app.route('/admindelete', methods=['DELETE'])
 def admindelete():
-    productID = request.form['itemid']
+    productID = request.json['itemid']
     product = inventory.query.get(productID)
     if product is None:
         return jsonify({'error': 'no such product exists'}), 404
@@ -321,6 +318,16 @@ def admindelete():
     db.session.delete(product)
     db.session.commit()
     return jsonify({'info': 'successfully deleted'}), 200
+
+# Error handler for 404 Not Found
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'error': 'page not found'}), 404  # Return JSON with error message and 404 status
+
+# Error handler for 400 Bad Request
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({'error': 'bad request'}), 400  # Return JSON with error message and 400 status
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>7a663142-63e4-4bb8-a9e4-45e403f5c4dc</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>__init__.py</StartupFile>
+    <StartupFile>__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="__init__.py" />
+    <Compile Include="__main__.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="admin.html" />

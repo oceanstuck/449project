@@ -20,7 +20,7 @@
             <input type="text" id="description" name="description" height="5" width="50" /><br />
             <input type="submit" id="create" name="create" value="Create" />
         </form>
-        <form title="update" action="/update" method="post">
+        <form title="update" action="/update" method="put">
             <label for="itemid">Item ID: </label>
             <input type="number" id="itemid" name="itemid" required />
             <label for="productname">Product name: </label>
@@ -41,7 +41,7 @@
         <form title="readall" action="/readall" method="get">
             <input type="submit" id="readall" name="readall" value="Read all" />
         </form>
-        <form title="delete" action="/delete" method="post">
+        <form title="delete" action="/delete" method="delete">
             <label for="itemid">Item ID: </label>
             <input type="number" id="itemid" name="itemid" required />
             <input type="submit" id="delete" name="delete" value="Delete" />

@@ -26,3 +26,6 @@ CREATE TABLE inventory (
 );
 
 INSERT INTO admin (username, pword, email) VALUES ('ocean', 'ocean', 'a@a.com');
+SELECT * FROM admin;
+SELECT * FROM user;
+SELECT * FROM inventory;
